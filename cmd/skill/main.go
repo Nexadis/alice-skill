@@ -15,7 +15,7 @@ func main() {
 
 func run() error {
 	fmt.Println("Running server on", flagRunAddr)
-	return http.ListenAndServe(":8080", http.HandlerFunc(webhook))
+	return http.ListenAndServe(flagRunAddr, http.HandlerFunc(webhook))
 }
 
 func webhook(w http.ResponseWriter, r *http.Request) {
