@@ -8,15 +8,15 @@ import (
 )
 
 func main() {
-	parseFlags()
-	if err := Run(); err != nil {
+	c := NewConfig()
+	if err := Run(c); err != nil {
 		panic(err)
 	}
 }
 
-func Run() error {
+func Run(c *Config) error {
 	e := newServer()
-	return e.Start(listenAddr)
+	return e.Start(c.ListenAddr)
 }
 
 func newServer() *echo.Echo {
