@@ -2,32 +2,37 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	if err := run(); err != nil {
+	if err := Run(); err != nil {
 		panic(err)
 	}
 }
 
-func run() error {
-	return http.ListenAndServe(":8080", http.HandlerFunc(webhook))
+func Run() error {
+	e := echo.New()
+	e.POST("/", root)
+	return e.Start(":8080")
 }
 
-func webhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
+func root(e echo.Context) error {
+	api := &API{
+		Response: &Response{
+			Text: "Извините, я пока ничего не умею",
+		},
+		Version: "1.0",
 	}
+	return e.JSON(http.StatusOK, api)
+}
 
-	w.Header().Set("Content-Type", "application/json")
+type Response struct {
+	Text string `json:"text"`
+}
 
-	_, _ = w.Write([]byte(`
-    {
-    "response": {
-      "text": "Извините, я пока ничего не умею"
-    },
-    "version": "1.0"
-    }
-    `))
+type API struct {
+	Response *Response `json:"response,omitempty"`
+	Version  string    `json:"version"`
 }
