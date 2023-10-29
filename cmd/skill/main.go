@@ -2,32 +2,36 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/Nexadis/alice-skill/internal/api"
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	if err := run(); err != nil {
+	c := NewConfig()
+	if err := Run(c); err != nil {
 		panic(err)
 	}
 }
 
-func run() error {
-	return http.ListenAndServe(":8080", http.HandlerFunc(webhook))
+func Run(c *Config) error {
+	e := newServer()
+	return e.Start(c.ListenAddr)
 }
 
-func webhook(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
+func newServer() *echo.Echo {
+	e := echo.New()
+	e.POST("/", root)
+	return e
+}
+
+func root(e echo.Context) error {
+	api := &api.API{
+		Response: &api.Response{
+			Text: api.CanNothing,
+		},
+		Version: api.Version,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	_, _ = w.Write([]byte(`
-    {
-    "response": {
-      "text": "Извините, я пока ничего не умею"
-    },
-    "version": "1.0"
-    }
-    `))
+	return e.JSON(http.StatusOK, api)
 }
