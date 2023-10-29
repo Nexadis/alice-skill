@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/Nexadis/alice-skill/internal/api"
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,26 +14,23 @@ func main() {
 }
 
 func Run() error {
-	e := echo.New()
-	e.POST("/", root)
+	e := newServer()
 	return e.Start(":8080")
 }
 
+func newServer() *echo.Echo {
+	e := echo.New()
+	e.POST("/", root)
+	return e
+}
+
 func root(e echo.Context) error {
-	api := &API{
-		Response: &Response{
-			Text: "Извините, я пока ничего не умею",
+	api := &api.API{
+		Response: &api.Response{
+			Text: api.CanNothing,
 		},
-		Version: "1.0",
+		Version: api.Version,
 	}
+
 	return e.JSON(http.StatusOK, api)
-}
-
-type Response struct {
-	Text string `json:"text"`
-}
-
-type API struct {
-	Response *Response `json:"response,omitempty"`
-	Version  string    `json:"version"`
 }
