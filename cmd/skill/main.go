@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	parseFlags()
 	if err := Run(); err != nil {
 		panic(err)
 	}
@@ -15,7 +16,7 @@ func main() {
 
 func Run() error {
 	e := newServer()
-	return e.Start(":8080")
+	return e.Start(listenAddr)
 }
 
 func newServer() *echo.Echo {
